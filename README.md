@@ -96,24 +96,69 @@ The **Hazard Unit (`hazard_unit.v`)** actively monitors register destinations (`
 ---
 
 ## Repository Structure
-├── alu.v                # Arithmetic Logic Unit
-├── ALU_decoder.v        # Decodes funct3/funct7 into 3-bit ALU controls
-├── control_unit_top.v   # Top control unit wrapping Main & ALU decoders
-├── data_mem.v           # Data Memory module
-├── dm_wb.v              # MEM/WB pipeline register
-├── ex_dm.v              # EX/MEM pipeline register
-├── hazard_unit.v        # Data hazard detection & forwarding unit
-├── id_ex.v              # ID/EX pipeline register
-├── if_id.v              # IF/ID pipeline register
-├── immediate_gen.v      # Immediate Sign Extension generator
-├── instruction_mem.v   # Instruction ROM memory module
-├── main_decoder.v       # Decodes 7-bit opcode to control signals
-├── Mux.v                # 2-to-1 and 3-to-1 Multiplexers
-├── pc.v                 # Program Counter register module
-├── PC_Adder.v           # 32-bit Adder module
-├── pipeline_top.v       # Processor top-level wrapper module
-├── register_file.v      # 32 x 32-bit Register File
-├── writeback_cycle.v    # Writeback stage logic
-├── pipeline_2_tb.v      # Simulation Testbench
-├── memfile.hex          # RISC-V machine code hex file
-└── README.md            # Project documentation
+graph TD
+    %% Top Level
+    subgraph TOP[" Top-Level & Testbench"]
+        direction TB
+        pipeline_top["pipeline_top.v<br/># Processor top-level wrapper module"]
+        pipeline_tb["pipeline_2_tb.v<br/># Simulation Testbench"]
+    end
+
+    %% Pipeline Stages
+    subgraph IF["1. FETCH (IF)"]
+        direction TB
+        pc["pc.v<br/># Program Counter register module"]
+        PC_Adder["PC_Adder.v<br/># 32-bit Adder module"]
+        instruction_mem["instruction_mem.v<br/># Instruction ROM memory module"]
+    end
+
+    subgraph ID["2. DECODE (ID)"]
+        direction TB
+        register_file["register_file.v<br/># 32 x 32-bit Register File"]
+        main_decoder["main_decoder.v<br/># Decodes 7-bit opcode to control signals"]
+        control_unit_top["control_unit_top.v<br/># Top control unit wrapping Main & ALU decoders"]
+        immediate_gen["immediate_gen.v<br/># Immediate Sign Extension generator"]
+    end
+
+    subgraph EX["3. EXECUTE (EX)"]
+        direction TB
+        alu["alu.v<br/># Arithmetic Logic Unit"]
+        ALU_decoder["ALU_decoder.v<br/># Decodes funct3/funct7 into 3-bit ALU controls"]
+        Mux["Mux.v<br/># 2-to-1 and 3-to-1 Multiplexers"]
+    end
+
+    subgraph MEM["4. MEMORY (MEM)"]
+        direction TB
+        data_mem["data_mem.v<br/># Data Memory module"]
+    end
+
+    subgraph WB["5. WRITEBACK (WB)"]
+        direction TB
+        writeback_cycle["writeback_cycle.v<br/># Writeback stage logic"]
+    end
+
+    %% Pipeline Registers
+    subgraph REGS[" Pipeline Registers"]
+        if_id["if_id.v<br/># IF/ID pipeline register"]
+        id_ex["id_ex.v<br/># ID/EX pipeline register"]
+        ex_dm["ex_dm.v<br/># EX/MEM pipeline register"]
+        dm_wb["dm_wb.v<br/># MEM/WB pipeline register"]
+    end
+
+    %% Hazard Control
+    subgraph HAZARD[" Hazard Control"]
+        hazard_unit["hazard_unit.v<br/># Data hazard detection & forwarding unit"]
+    end
+
+    %% Documentation & Assets
+    subgraph DOCS[" Project Files"]
+        memfile["memfile.hex<br/># RISC-V machine code hex file"]
+        readme["README.md<br/># Project documentation"]
+    end
+
+    %% Pipeline Flow Connections
+    IF --> if_id --> ID --> id_ex --> EX --> ex_dm --> MEM --> dm_wb --> WB
+    
+    %% Hazard Connections
+    hazard_unit -. Control Signals .-> REGS
+    hazard_unit -. Forwarding .-> EX
