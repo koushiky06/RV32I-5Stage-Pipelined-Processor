@@ -8,21 +8,49 @@ This repository contains a functional 32-bit 5-stage pipelined processor core im
 ## Datapath Architecture
 
 The processor follows the classic 5-stage RISC-V pipelined architecture:
+```mermaid
+graph LR
+    %% Pipeline Stages
+    subgraph IF["1. FETCH (IF)"]
+        direction TB
+        PC["Program Counter"]
+        IM["Instruction Memory"]
+        PCA["PC Adder (+4)"]
+    end
 
-+-------------------------------------------------------------+
-              |                     HAZARD / FORWARDING UNIT                |
-              +-------------------------------------------------------------+
-                                 |                      |
-                            (ForwardA)              (ForwardB)
-                                 v                      v
-+------------+      +------------+  +--------------------+  +------------+  +------------+
-|   FETCH    | ---> |   DECODE   |  |      EXECUTE       |  |   MEMORY   |  | WRITEBACK  |
-|   (IF)     |      |   (ID)     |  |        (EX)        |  |   (MEM)    |  |    (WB)    |
-+------------+      +------------+  +--------------------+  +------------+  +------------+
-| • PC Reg   |      | • Reg File |  | • ALU              |  | • Data Mem |  | • Result   |
-| • InstrMem |      | • Main Dec |  | • ALU Dec          |  |            |  |   Mux      |
-| • PC Adder |      | • Sign Ext |  | • Branch Adder     |  |            |  |            |
-+------------+      +------------+  +--------------------+  +------------+  +------------+
+    subgraph ID["2. DECODE (ID)"]
+        direction TB
+        RF["Register File"]
+        MD["Main Decoder"]
+        SE["Sign Extension"]
+    end
+
+    subgraph EX["3. EXECUTE (EX)"]
+        direction TB
+        ALU["ALU"]
+        AD["ALU Decoder"]
+        BA["Branch Adder"]
+    end
+
+    subgraph MEM["4. MEMORY (MEM)"]
+        direction TB
+        DM["Data Memory"]
+    end
+
+    subgraph WB["5. WRITEBACK (WB)"]
+        direction TB
+        MUX["Result Mux"]
+    end
+
+    %% Pipeline Flow
+    IF --> ID --> EX --> MEM --> WB
+
+    %% Hazard/Forwarding Unit
+    HU["HAZARD / FORWARDING UNIT"]
+    EX -. ForwardA / ForwardB .-> HU
+    MEM -. Forwarding Path .-> EX
+    WB -. Forwarding Path .-> EX
+```
 
 ### Pipeline Stages Breakdown
 
