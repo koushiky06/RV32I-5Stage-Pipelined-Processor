@@ -96,6 +96,7 @@ The **Hazard Unit (`hazard_unit.v`)** actively monitors register destinations (`
 ---
 
 ## Repository Structure
+```mermaid
 graph TD
     %% Top Level
     subgraph TOP[" Top-Level & Testbench"]
