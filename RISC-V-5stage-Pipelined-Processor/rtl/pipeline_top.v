@@ -1,35 +1,8 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 28.07.2026 22:09:57
-// Design Name: 
-// Module Name: pipeline_top
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 module pipeline_top(clk, rst);
 
-
-
-    // Declaration of I/O
-
     input clk, rst;
 
-
-
-    // Declaration of Interim Wires
 
     wire PCSrcE, RegWriteW, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, BranchE, RegWriteM, MemWriteM, ResultSrcM, ResultSrcW;
 
@@ -46,12 +19,6 @@ module pipeline_top(clk, rst);
     wire [1:0] ForwardBE, ForwardAE;
 
     
-
-
-
-    // Module Initiation
-
-    // Fetch Stage
 
     Fetch_Cycle Fetch (
 
@@ -70,10 +37,6 @@ module pipeline_top(clk, rst);
                         .PCPlus4D(PCPlus4D)
 
                     );
-
-
-
-    // Decode Stage
 
     decode_cycle Decode (
 
@@ -122,10 +85,6 @@ module pipeline_top(clk, rst);
                         .RS2_E(RS2_E)
 
                     );
-
-
-
-    // Execute Stage
 
     execute_cycle Execute (
 
@@ -182,11 +141,7 @@ module pipeline_top(clk, rst);
                         .ForwardB_E(ForwardBE)
 
                     );
-
     
-
-    // Memory Stage
-
     memory_cycle Memory (
 
                         .clk(clk), 
@@ -221,10 +176,6 @@ module pipeline_top(clk, rst);
 
                     );
 
-
-
-    // Write Back Stage
-
     writeback_cycle WriteBack (
 
                         .clk(clk), 
@@ -242,10 +193,6 @@ module pipeline_top(clk, rst);
                         .ResultW(ResultW)
 
                     );
-
-
-
-    // Hazard Unit
 
     Hazard_Unit Forwarding_block (
 
