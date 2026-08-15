@@ -1,7 +1,7 @@
 module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE,
     BranchE,  ALUControlE, RD1_E, RD2_E, Imm_Ext_E, RD_E, PCE, PCPlus4E, RS1_E, RS2_E);
 
-    // Declaring I/O
+    
     input clk, rst, RegWriteW;
     input [4:0] RDW;
     input [31:0] InstrD, PCD, PCPlus4D, ResultW;
@@ -12,13 +12,13 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, Re
     output [4:0] RS1_E, RS2_E, RD_E;
     output [31:0] PCE, PCPlus4E;
 
-    // Declare Interim Wires
+
     wire RegWriteD,ALUSrcD,MemWriteD,ResultSrcD,BranchD;
     wire [1:0] ImmSrcD;
     wire [2:0] ALUControlD;
     wire [31:0] RD1_D, RD2_D, Imm_Ext_D;
 
-    // Declaration of Interim Register
+    
     reg RegWriteD_r,ALUSrcD_r,MemWriteD_r,ResultSrcD_r,BranchD_r;
     reg [2:0] ALUControlD_r;
     reg [31:0] RD1_D_r, RD2_D_r, Imm_Ext_D_r;
@@ -26,8 +26,7 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, Re
     reg [31:0] PCD_r, PCPlus4D_r;
 
 
-    // Initiate the modules
-    // Control Unit
+    
     control_unit_top control (
                             .Opcode(InstrD[6:0]),
                             .RegWrite(RegWriteD),
@@ -41,7 +40,7 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, Re
                             .ALUControl(ALUControlD)
                             );
 
-    // Register File
+    
     reg_file rf (
                         .clk(clk),
                         .rst(rst),
@@ -54,14 +53,14 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, Re
                         .RD2(RD2_D)
                         );
 
-    // Sign Extension
+    
     Sign_Extend extension (
                         .In(InstrD[31:0]),
                         .Imm_Ext(Imm_Ext_D),
                         .ImmSrc(ImmSrcD)
                         );
 
-    // Declaring Register Logic
+    
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b1) begin
             RegWriteD_r <= 1'b0;
@@ -97,7 +96,7 @@ module decode_cycle(clk, rst, InstrD, PCD, PCPlus4D, RegWriteW, RDW, ResultW, Re
         end
     end
 
-    // Output asssign statements
+    
     assign RegWriteE = RegWriteD_r;
     assign ALUSrcE = ALUSrcD_r;
     assign MemWriteE = MemWriteD_r;
