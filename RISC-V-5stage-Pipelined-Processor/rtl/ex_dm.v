@@ -1,7 +1,7 @@
 module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, BranchE, ALUControlE, 
     RD1_E, RD2_E, Imm_Ext_E, RD_E, PCE, PCPlus4E, PCSrcE, PCTargetE, RegWriteM, MemWriteM, ResultSrcM, RD_M, PCPlus4M, WriteDataM, ALU_ResultM, ResultW, ForwardA_E, ForwardB_E);
 
-    // Declaration I/Os
+    
     input clk, rst, RegWriteE,ALUSrcE,MemWriteE,ResultSrcE,BranchE;
     input [2:0] ALUControlE;
     input [31:0] RD1_E, RD2_E, Imm_Ext_E;
@@ -15,18 +15,17 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
     output [31:0] PCPlus4M, WriteDataM, ALU_ResultM;
     output [31:0] PCTargetE;
 
-    // Declaration of Interim Wires
+    
     wire [31:0] Src_A, Src_B_interim, Src_B;
     wire [31:0] ResultE;
     wire ZeroE;
 
-    // Declaration of Register
+
     reg RegWriteE_r, MemWriteE_r, ResultSrcE_r;
     reg [4:0] RD_E_r;
     reg [31:0] PCPlus4E_r, RD2_E_r, ResultE_r;
 
-    // Declaration of Modules
-    // 3 by 1 Mux for Source A
+    
     Mux_3_by_1 srca_mux (
                         .a(RD1_E),
                         .b(ResultW),
@@ -35,7 +34,7 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
                         .d(Src_A)
                         );
 
-    // 3 by 1 Mux for Source B
+
     Mux_3_by_1 srcb_mux (
                         .a(RD2_E),
                         .b(ResultW),
@@ -43,7 +42,7 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
                         .s(ForwardB_E),
                         .d(Src_B_interim)
                         );
-    // ALU Src Mux
+    
     Mux alu_src_mux (
             .a(Src_B_interim),
             .b(Imm_Ext_E),
@@ -51,7 +50,6 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
             .c(Src_B)
             );
 
-    // ALU Unit
     alu alu (
             .A(Src_A),
             .B(Src_B),
@@ -60,14 +58,12 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
             .zero(ZeroE)    
             );
 
-    // Adder
     PC_Adder branch_adder (
             .a(PCE),
             .b(Imm_Ext_E),
             .c(PCTargetE)
             );
 
-    // Register Logic
     always @(posedge clk or negedge rst) begin
         if(rst == 1'b1) begin
             RegWriteE_r <= 1'b0; 
@@ -89,7 +85,6 @@ module execute_cycle(clk, rst, RegWriteE, ALUSrcE, MemWriteE, ResultSrcE, Branch
         end
     end
 
-    // Output Assignments
     assign PCSrcE = ZeroE &  BranchE;
     assign RegWriteM = RegWriteE_r;
     assign MemWriteM = MemWriteE_r;
