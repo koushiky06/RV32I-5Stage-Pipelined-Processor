@@ -21,10 +21,4 @@ end
 
 assign RD = data_mem[A];
 
-// initial begin
-//        mem[0] = 32'h00000000;
-//        //mem[40] = 32'h00000002;
-//    end
-
-
 endmodule
