@@ -19,7 +19,7 @@ reg [31:0] PCF_reg, PCPlus4F_reg;
                 .c(PC_F)
                 );
 
-    // Declare PC Counter
+   
     PC_Module Program_Counter (
                 .clk(clk),
                 .rst(rst),
@@ -27,21 +27,21 @@ reg [31:0] PCF_reg, PCPlus4F_reg;
                 .PC_next(PC_F)
                 );
 
-    // Declare Instruction Memory
+   
     instr_mem instruction_mem(
                 .rst(rst),
                 .A(PCF),
                 .RD(InstrF)
                 );
 
-    // Declare PC adder
+   
     PC_Adder PC_adder (
                 .a(PCF),
                 .b(32'h00000004),
                 .c(PCPlus4F)
                 );
 
-    // Fetch Cycle Register Logic
+   
     always @(posedge clk or posedge rst) begin
     if (rst) begin
         InstrF_reg   <= 32'h00000000;
@@ -56,7 +56,7 @@ reg [31:0] PCF_reg, PCPlus4F_reg;
 end
 
 
-    // Assigning Registers Value to the Output port
+   
     assign  InstrD = (rst == 1'b1) ? 32'h00000000 : InstrF_reg;
     assign  PCD = (rst == 1'b1) ? 32'h00000000 : PCF_reg;
     assign  PCPlus4D = (rst == 1'b1) ? 32'h00000000 : PCPlus4F_reg;
