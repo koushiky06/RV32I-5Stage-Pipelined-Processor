@@ -1,6 +1,6 @@
 module Hazard_Unit(rst, RegWriteM, RegWriteW, RD_M, RD_W, Rs1_E, Rs2_E, ForwardAE, ForwardBE);
 
-    // Declaration of I/Os
+    
     input rst, RegWriteM, RegWriteW;
     input [4:0] RD_M, RD_W, Rs1_E, Rs2_E;
     output [1:0] ForwardAE, ForwardBE;
